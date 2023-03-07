@@ -24,8 +24,9 @@ df = load_data()
 
 # print(df.dtypes)
 # st.dataframe(df)
+# st.write("#### Filtering: Grouped Bar Chart of Parkinsons Counts by Age&Gender ")
 
-st.write("Please specify the group you are interested in: ")
+st.write("#### Filtering: Please specify the group you are interested in: ")
 
 
 year = st.slider("Year",int(df["BirthYear"].min()), int(df["BirthYear"].max()), (1927,1986))
@@ -70,7 +71,7 @@ subset2["Parkinsons_index"] = subset2.index
 # st.dataframe(subset2)
 
 
-st.write("### Plot 1: Donut Charts of Parkinsons and Tremors ")
+st.write("#### Plot 1: Donut Charts of Parkinsons and Tremors ")
 
 
 chart = alt.Chart(subset2).mark_arc(innerRadius=30).encode(
@@ -98,6 +99,7 @@ chart1 = alt.Chart(subset3).mark_arc(innerRadius=30).encode(
 
 st.altair_chart(chart1, use_container_width=True)
 
+st.write("#### Plot 2: Grouped Bar Chart of Parkinsons Counts by Age&Gender ")
 
 def age(born):
     today = date.today()
