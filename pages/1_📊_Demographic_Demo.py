@@ -2,7 +2,8 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 from datetime import datetime, date
-
+import warnings
+warnings.filterwarnings("ignore")
 
 st.set_page_config(page_title="Plotting Demo", page_icon="📊")
 
