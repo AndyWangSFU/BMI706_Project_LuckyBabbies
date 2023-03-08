@@ -6,22 +6,26 @@ st.set_page_config(page_title="Drug Use Demo", page_icon="📊")
 
 @st.cache_data
 def load_data():
+    # Below are code used for data processing, however, due to large size
+    # of data (500mb) which  is not applicable to be uploaded into github,
+    # data is pre-processed into file 'demo_3_data.py'
     users_stat = pd.read_csv('demographics.csv', index_col = 0)
-    user_data = pd.read_csv('time_data.csv.zip', compression ='zip', index_col = 0, low_memory=False)
+    # user_data = pd.read_csv('time_data.csv.zip', compression ='zip', index_col = 0, low_memory=False)
 
-    original_data = user_data.copy()
-    original_data.head()
+    # original_data = user_data.copy()
+    # original_data.head()
 
-    user_data['Hold_Time'] = pd.to_numeric(user_data['Hold_Time'], errors='coerce')
-    user_data['Latency_Time'] = pd.to_numeric(user_data['Latency_Time'], errors='coerce')
-    user_data['Flight_Time'] = pd.to_numeric(user_data['Flight_Time'], errors='coerce')
-    user_data.dropna()
+    # user_data['Hold_Time'] = pd.to_numeric(user_data['Hold_Time'], errors='coerce')
+    # user_data['Latency_Time'] = pd.to_numeric(user_data['Latency_Time'], errors='coerce')
+    # user_data['Flight_Time'] = pd.to_numeric(user_data['Flight_Time'], errors='coerce')
+    # user_data.dropna()
 
-    selected = user_data.groupby(['User_id']).filter(lambda x: x['Date'].count() > 30)
-    selected = selected.groupby(['Date']).filter(lambda x: x['Timestamp'].count() > 30)
+    # selected = user_data.groupby(['User_id']).filter(lambda x: x['Date'].count() > 30)
+    # selected = selected.groupby(['Date']).filter(lambda x: x['Timestamp'].count() > 30)
 
-    summary_by_date = selected.groupby(['User_id', 'Date'])[['Hold_Time', 'Latency_Time', 'Flight_Time']].mean().reset_index()
-    summary_by_date = pd.DataFrame(summary_by_date)
+    # summary_by_date = selected.groupby(['User_id', 'Date'])[['Hold_Time', 'Latency_Time', 'Flight_Time']].mean().reset_index()
+    # summary_by_date = pd.DataFrame(summary_by_date)
+    summary_by_date = pd.read_csv('demo_3_data_v2.csv', index_col = 0)
     summary_by_date['Date'] = pd.to_datetime(summary_by_date['Date'],format='%y%m%d', errors='coerce')
     summary_by_date['Date'] = summary_by_date['Date'] - summary_by_date.groupby('User_id')['Date'].transform('first')
     summary_by_date = summary_by_date[summary_by_date['Hold_Time'] >= 0]
@@ -40,6 +44,7 @@ def load_data():
 
 
 df = load_data()
+print(df)
 st.write("## Hold time by drug uses for Parkinson's patients")
 
 
