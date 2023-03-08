@@ -7,7 +7,7 @@ st.set_page_config(page_title="Drug Use Demo", page_icon="📊")
 @st.cache_data
 def load_data():
     users_stat = pd.read_csv('demographics.csv', index_col = 0)
-    user_data = pd.read_csv('time_data.csv', index_col = 0, low_memory=False)
+    user_data = pd.read_csv('time_data.csv.zip', compression ='zip', index_col = 0, low_memory=False)
 
     original_data = user_data.copy()
     original_data.head()
