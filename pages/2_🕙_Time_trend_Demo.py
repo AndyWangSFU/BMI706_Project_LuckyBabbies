@@ -10,54 +10,15 @@ st.set_page_config(page_title="Time trend and response distribution", page_icon=
 @st.cache_data
 
 def load_data():
-    users_stat = pd.read_csv('demographics.csv', index_col = 0)
-    user_data = pd.read_csv('time_data.csv.zip', compression = 'zip', index_col = 0)
+    plot_1_long = pd.read_csv("plot 1.csv", index_col = 0)
+    plot_2 = pd.read_csv("plot 2.csv", index_col = 0)
 
-    return users_stat, user_data
+    return plot_1_long, plot_2
 
-users_stat, user_data = load_data()
+plot_1_long, plot_2 = load_data()
 
 st.write("## Time trend for response time, linked to detailed response time distribution")
 
-
-# turn the response time variables into numeric type. Then clean the abnormal values
-user_data['Hold_Time'] = pd.to_numeric(user_data['Hold_Time'], errors='coerce')
-user_data['Latency_Time'] = pd.to_numeric(user_data['Latency_Time'], errors='coerce')
-user_data['Flight_Time'] = pd.to_numeric(user_data['Flight_Time'], errors='coerce')
-user_data.dropna()
-user_data = user_data[(user_data['Hold_Time'] >= 0) & (user_data['Latency_Time'] >= 0) & (user_data['Latency_Time'] >= 0)]
-
-# filter the data. Each participants must have at least 30 days of record. And each experiments day must have at least 30 time stamps. 
-selected = user_data.groupby(['User_id']).filter(lambda x: x['Date'].count() > 30)
-selected = selected.groupby(['Date']).filter(lambda x: x['Timestamp'].count() > 30)
-
-# group the data by date and id
-summary_by_date = selected.groupby(['User_id', 'Date'])[['Hold_Time', 'Latency_Time', 'Flight_Time']].mean().reset_index()
-
-# clean the date attribute
-summary_by_date['Date'] = pd.to_datetime(summary_by_date['Date'],format='%y%m%d', errors='coerce')
-summary_by_date.dropna()
-summary_by_date['Date'] = summary_by_date['Date'] - summary_by_date.groupby('User_id')['Date'].transform('first')
-summary_by_date['Date'] = summary_by_date['Date'].dt.total_seconds().astype(int)
-summary_by_date['Date']/=86400
-
-# filter the grouped data
-summary_by_date = summary_by_date[summary_by_date['Hold_Time'] >= 0]
-summary_by_date = summary_by_date[summary_by_date['Latency_Time'] >= 0]
-summary_by_date = summary_by_date[summary_by_date['Flight_Time'] >= 0]
-summary_by_date = summary_by_date.groupby('Date').filter(lambda x: x['User_id'].count() > 15) # sort out negative or outlier dates
-
-
-# get the data for the first graph
-plot_1 = summary_by_date.groupby('Date')[['Hold_Time', 'Latency_Time', 'Flight_Time']].mean().reset_index()
-plot_1 = plot_1.round(3)
-# clean the outliers
-plot_1 = plot_1[(plot_1['Hold_Time'] < 400) & (plot_1['Latency_Time'] < 400) & (plot_1['Flight_Time'] < 400)]
-
-# turn the data frame into long format for ploting
-plot_1_long = pd.melt(
-     plot_1, id_vars=['Date'], var_name = 'Response type', value_name = 'Response time'
-)
 
 # the upper plot for time line
 type_selection = alt.selection_single(
@@ -82,20 +43,6 @@ time_trend = alt.Chart(plot_1_long).mark_line().encode(
 ).properties(
     width = 1000
 )
-
-
-# get the data for the sub plots
-plot_2 = summary_by_date.sample(min(5000,len(summary_by_date)))
-plot_2 = plot_2[(plot_2['Hold_Time'] < 400) & (plot_2['Latency_Time'] < 400) & (plot_2['Flight_Time'] < 400)]
-
-# turn the data into categories
-plot_2['hold time interval'] = pd.cut(plot_2['Hold_Time'], bins=8, labels=['0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350', '>350'], precision=0)
-plot_2['latency time interval'] = pd.cut(plot_2['Latency_Time'], bins=8, labels=['0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350', '>350'], precision=0)
-plot_2['flight time interval'] = pd.cut(plot_2['Flight_Time'], bins=8, labels=['0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350', '>350'], precision=0)
-
-# left join, include the Parkinson's status into the table
-plot_2 = plot_2.merge(users_stat.iloc[:,[0, 3]], on='User_id', how='left')
-plot_2 = plot_2.dropna()
 
 
 # the second plot
