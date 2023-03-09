@@ -25,7 +25,7 @@ st.markdown(
     finger movement patterns while typing. 
     The typing behavior is recorded by a keystroke recording app called [“Tappy”](https://physionet.org/content/tappy/1.0.0/). 
 
-    ### Variables
+    ### Demographic Variables
     - Numerical:
         * Birth Year: Year of birth
     - Categorical: 
