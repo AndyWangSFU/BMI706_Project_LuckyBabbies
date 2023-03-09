@@ -41,6 +41,14 @@ st.markdown(
         * MAOB: Whether they are using an MAO-B inhibitor [Yes/No]
         * Other: Whether they are taking another Parkinson's medication [Yes/No]
 
+    ### Temporal Variables
+        * Timestamp: HH:MM:SS.SSS
+        * Hand: L or R key pressed
+        * Hold time: Time between press and release for current key mmmm.m milliseconds
+        * Direction: Previous to current LL, LR, RL, RR (and S for a space key)
+        * Latency time: Time between pressing the previous key and pressing current key. Milliseconds
+        * Flight time: Time between release of previous key and press of current key. Milliseconds
+
     ### Reference 
     Goldberger, A., et al. "PhysioBank, PhysioToolkit, and PhysioNet: Components of 
     a new research resource for complex physiologic signals. Circulation [Online]. 101 (23), pp. e215–e220." (2000).
